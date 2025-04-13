@@ -1,9 +1,11 @@
+using System.Data;
 using System.Text;
 using GameCatalogAPI.DbContexts;
 using GameCatalogAPI.Entities;
 using GameCatalogAPI.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
@@ -21,6 +23,11 @@ builder.Services.AddControllers(configure =>
         setupAction.SerializerSettings.ContractResolver =
         new CamelCasePropertyNamesContractResolver();
     });
+
+//DAPER
+builder.Services.AddScoped<IDbConnection>(sp =>
+    new SqliteConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddDbContext<GameCatalogContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
