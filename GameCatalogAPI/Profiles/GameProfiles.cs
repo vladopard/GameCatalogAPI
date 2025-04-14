@@ -10,7 +10,7 @@ namespace GameCatalogAPI.Profiles
         {
             CreateMap<Game, GameDTO>()
                 .ForMember(dto => dto.DeveloperName,
-                ent => ent.MapFrom(g => g.Developer.Name));
+                ent => ent.MapFrom(g => g.Developer.Name)).ReverseMap();
             CreateMap<CreateGameForDeveloperDTO, Game>();
             CreateMap<GameUpdateDTO, Game>().ReverseMap();
             CreateMap<GameDTO, GameUpdateDTO>()

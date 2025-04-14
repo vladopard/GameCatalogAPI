@@ -12,10 +12,12 @@ namespace GameCatalogAPI.Repository
         Task<Game?> GetGameAsync(int id);
         Task<Game?> AddGameAsync(Game? game);
         Task<bool> DeleteGameAsync(int id);
+        Task<bool> UpdateGameAsync(Game game);
         Task<IEnumerable<Developer>> GetAllDevelopersAsync();
         Task<Developer?> GetDeveloperAsync(int id);
         Task<Developer?> AddDeveloperAsync(Developer? developer);
         Task<bool> DeleteDeveloperAsync(int id);
+        Task<bool> UpdateDeveloperAsync(Developer developer);
         Task<bool> SaveChangesAsync();
     }
 }

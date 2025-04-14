@@ -39,7 +39,11 @@ namespace GameCatalogAPI.Repository
         public async Task<GameDTO?> GetSingleGame(int gameId)
         {
             var gameEntity = await _gameRepo.GetGameAsync(gameId);
-            return gameEntity == null ? null : _mapper.Map<GameDTO>(gameEntity);
+            //return gameEntity == null ? null : _mapper.Map<GameDTO>(gameEntity);
+            var dto = _mapper.Map<GameDTO>(gameEntity);
+            Console.WriteLine($"DeveloperName in DTO: {dto.DeveloperName}");
+            if (dto == null) return null;
+            else return dto;
         }
 
         public async Task<GameDTO?> CreateGameForDeveloper(
@@ -66,21 +70,24 @@ namespace GameCatalogAPI.Repository
             if (dev == null) return false;
 
             _mapper.Map(gameUpdateDTO, gameEntity);
-            return await _gameRepo.SaveChangesAsync();
+            return await _gameRepo.UpdateGameAsync(gameEntity);
         }
 
         public async Task<bool> PartiallyUpdateGame(int id,
             GameUpdateDTO patchedGameDTO)
         {
             var gameEntity = await _gameRepo.GetGameAsync(id);
+            if (gameEntity == null) return false;
+
             _mapper.Map(patchedGameDTO, gameEntity);
-            return await _gameRepo.SaveChangesAsync();
+            return await _gameRepo.UpdateGameAsync(gameEntity);
         }
 
         public async Task<bool> DeleteGame(int id)
         {
             var game = await _gameRepo.GetGameAsync(id);
             if (game == null) return false;
+
             return await _gameRepo.DeleteGameAsync(id);
         }
     }

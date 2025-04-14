@@ -123,11 +123,21 @@ namespace GameCatalogAPI.Repository
             .FirstOrDefaultAsync(g => g.Id == id);
         }
 
+
+
         public async Task<bool> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync() >= 0;
         }
 
+        public Task<bool> UpdateDeveloperAsync(Developer developer)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<bool> UpdateGameAsync(Game game)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

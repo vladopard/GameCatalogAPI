@@ -1,7 +1,9 @@
 using System.Data;
 using System.Text;
+using Dapper;
 using GameCatalogAPI.DbContexts;
 using GameCatalogAPI.Entities;
+using GameCatalogAPI.Helpers;
 using GameCatalogAPI.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -23,16 +25,17 @@ builder.Services.AddControllers(configure =>
         setupAction.SerializerSettings.ContractResolver =
         new CamelCasePropertyNamesContractResolver();
     });
-
 //DAPER
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqliteConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+//“Whenever you see a DateOnly property in my models, use this handler to read/write values.”
+SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
 builder.Services.AddDbContext<GameCatalogContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IGameRepository, DapperGameRepository>();
 builder.Services.AddScoped<IDeveloperService, DeveloperService>();
 builder.Services.AddScoped<IGameService, GameService>();
 

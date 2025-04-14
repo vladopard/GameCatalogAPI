@@ -42,9 +42,14 @@ namespace GameCatalogAPI.Repository
         public async Task<bool> PatchAsync(int id,
             DeveloperUpdateDTO patchedDTO)
         {
-            var devEntity = await _gameRepository.GetDeveloperAsync(id);
-            _mapper.Map(patchedDTO, devEntity);
-            return await _gameRepository.SaveChangesAsync();
+            //EF CORE VERSION
+            //var devEntity = await _gameRepository.GetDeveloperAsync(id);
+            //_mapper.Map(patchedDTO, devEntity);
+            //return await _gameRepository.SaveChangesAsync();
+
+            var updatedEntity = _mapper.Map<Developer>(patchedDTO);
+            updatedEntity.Id = id;
+            return await _gameRepository.UpdateDeveloperAsync(updatedEntity);
         }
     }
 }

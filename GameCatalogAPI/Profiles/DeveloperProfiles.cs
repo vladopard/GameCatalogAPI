@@ -10,6 +10,7 @@ namespace GameCatalogAPI.Profiles
         {
             CreateMap<Developer, DeveloperDTO>();
             CreateMap<CreateDeveloperDTO, Developer>();
+            CreateMap<DeveloperUpdateDTO, Developer>().ReverseMap();
         }
     }
 }

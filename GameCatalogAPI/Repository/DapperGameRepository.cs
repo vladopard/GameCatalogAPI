@@ -62,13 +62,44 @@ namespace GameCatalogAPI.Repository
 
         public async Task<IEnumerable<Developer>> GetAllDevelopersAsync()
         {
-            var sql = "SELECT * FROM Developers";
-            return await _db.QueryAsync<Developer>(sql);
+            var sql = "SELECT d.Id, d.Name, d.Country, d.Founded, " +
+                "g.Id, g.Name AS GameName, g.Genre, g.Platform, g.Rating, g.ReleaseDate, g.DeveloperId " +
+                "FROM Developers d " +
+                "INNER JOIN Games g on d.Id = g.DeveloperId";
+
+            var devDict = new Dictionary<int, Developer>();
+
+            var result = await _db.QueryAsync<Developer, Game, Developer>(
+                sql,
+                (dev, game) =>
+                {
+                    if (!devDict.TryGetValue(dev.Id, out var existingDev))
+                    {
+                        existingDev = dev;
+                        existingDev.Games = new List<Game>();
+                        devDict.Add(dev.Id, existingDev);
+                    }
+
+                    // Map game name etc.
+                    if (game != null)
+                    {
+                        game.Developer = existingDev;
+                        existingDev.Games.Add(game);
+                    }
+
+                    return existingDev;
+                },
+                //Use splitOn: "Id" → this tells Dapper to split when it hits the second Id column
+                splitOn: "Id"
+            );
+
+            return devDict.Values;
+
         }
 
         public async Task<MyPagedResult<Game>> GetAllGamesAsync(GameQueryParameters query)
         {
-            var baseSql = @"SELECT g.*, d.Id as DevId, d.Name as DevName, d.Country, d.Founded
+            var baseSql = @"SELECT g.*, d.Id as DevId, d.Name, d.Country, d.Founded
             FROM Games g
             INNER JOIN Developers d on g.DeveloperId = d.Id";
 
@@ -119,9 +150,9 @@ namespace GameCatalogAPI.Repository
         public async Task<IEnumerable<Game>> GetAllGamesWithDevsAsync(GameQueryParameters query)
         {
             //Game → "Fortnite" with Developer → "Epic Games"
-            var sql = "SELECT g.*, d.Id as DevId, d.Name as DevName, d.Country, d.Founded" +
+            var sql = "SELECT g.*, d.Id as DevId, d.Name, d.Country, d.Founded" +
                 "FROM Games g " +
-                "INNER JOIN Developers d on g.DeveloperId = d.id" +
+                "INNER JOIN Developers d on g.DeveloperId = d.Id" +
                 "WHERE LOWER(g.Name) LIKE @Search or LOWER(G.Genre) LIKE @Search";
 
             //First part of the row maps to a Game,Second part maps to a Developer
@@ -156,12 +187,12 @@ namespace GameCatalogAPI.Repository
         public async Task<Developer?> GetDeveloperAsync(int id)
         {
             var sql = "SELECT * FROM Developers WHERE Id = @Id";
-            return await _db.QueryFirstOrDefaultAsync(sql, new { Id = id });
+            return await _db.QueryFirstOrDefaultAsync<Developer>(sql, new { Id = id });
         }
 
         public async Task<Game?> GetGameAsync(int id)
         {
-            var sql = @"SELECT g.*, d.Id as DevId, d.Name as DevName, d.Country, d.Founded
+            var sql = @"SELECT g.*, d.Id as DevId, d.Name, d.Country, d.Founded
                         FROM Games g
                         INNER JOIN Developers d on g.DeveloperId = d.Id
                         WHERE g.Id = @Id";
@@ -185,6 +216,31 @@ namespace GameCatalogAPI.Repository
             //When you execute an INSERT, UPDATE, or DELETE with ExecuteAsync()
             //→ the change happens immediately in the database.
             //There’s no context that’s keeping track of what needs to be saved later.
+        }
+
+        public async Task<bool> UpdateDeveloperAsync(Developer developer)
+        {
+            var sql = @"UPDATE Developers  
+                        SET Name = @Name, Country = @Country, Founded = @Founded
+                        WHERE Id = @Id";
+
+            var affected = await _db.ExecuteAsync(sql, developer);
+            return affected > 0;
+                        
+        }
+
+        public async Task<bool> UpdateGameAsync(Game game)
+        {
+            var sql = @"UPDATE Games 
+                        SET Genre = @Genre,
+                        Platform = @Platform,
+                        Rating = @Rating,
+                        ReleaseDate = @ReleaseDate,
+                        DeveloperId = @DeveloperId
+                        WHERE Id = @Id";
+
+            var affected = await _db.ExecuteAsync(sql, game);
+            return affected > 0;
         }
     }
 }
