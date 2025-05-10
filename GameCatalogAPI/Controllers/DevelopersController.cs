@@ -53,7 +53,7 @@ namespace GameCatalogAPI.Controllers
 
         }
 
-        [HttpPatch("id")]
+        [HttpPatch("{id}")]
         public async Task<ActionResult> PartiallyUpdateDeveloper(int id,
             JsonPatchDocument<DeveloperUpdateDTO> patchDocument)
         {
