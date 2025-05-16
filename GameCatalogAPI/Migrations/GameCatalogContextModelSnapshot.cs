@@ -4,6 +4,7 @@ using GameCatalogAPI.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,26 +16,32 @@ namespace GameCatalogAPI.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.14")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("GameCatalogAPI.Entities.Developer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateOnly>("Founded")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -82,31 +89,33 @@ namespace GameCatalogAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DeveloperId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Genre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Platform")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("Rating")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("ReleaseDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("date");
 
                     b.HasKey("Id");
 
@@ -201,23 +210,25 @@ namespace GameCatalogAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Age")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("Role")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -228,7 +239,7 @@ namespace GameCatalogAPI.Migrations
                         {
                             Id = 1,
                             Age = 25,
-                            PasswordHash = "$2a$11$LyZxtrjPfmnZRr41E.SIEuJS0kpymeaFFaqOudqVWdSJRB.hRICdi",
+                            PasswordHash = "$2a$11$c4FBkI2HLSzuyGLHQ0H98.KQejkPcR9FbKO25Wv9FdfDBQwLhtOCu",
                             Role = 1,
                             Username = "admin"
                         },
@@ -236,7 +247,7 @@ namespace GameCatalogAPI.Migrations
                         {
                             Id = 3,
                             Age = 16,
-                            PasswordHash = "$2a$11$LyZxtrjPfmnZRr41E.SIEuJS0kpymeaFFaqOudqVWdSJRB.hRICdi",
+                            PasswordHash = "$2a$11$c4FBkI2HLSzuyGLHQ0H98.KQejkPcR9FbKO25Wv9FdfDBQwLhtOCu",
                             Role = 1,
                             Username = "keba"
                         },
@@ -244,7 +255,7 @@ namespace GameCatalogAPI.Migrations
                         {
                             Id = 2,
                             Age = 30,
-                            PasswordHash = "$2a$11$59p1npv2XBeCR56oyoFqeeqb8Dqf5TXgEmY/3W3VRQF.urC2f/kB6",
+                            PasswordHash = "$2a$11$yaPqa1JJSHTuxbP6Jdgw/Oc7aVNT/OLuXGO/yXbnT8m.jBDdq.u82",
                             Role = 0,
                             Username = "covek"
                         });

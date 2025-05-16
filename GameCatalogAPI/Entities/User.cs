@@ -8,17 +8,16 @@ namespace GameCatalogAPI.Entities
         User,
         Admin
     }
-
     public class User
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Username { get; set; } = string.Empty;
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string PasswordHash { get; set; } = string.Empty;
         [Required]
         public Role Role { get; set; } = Role.User;

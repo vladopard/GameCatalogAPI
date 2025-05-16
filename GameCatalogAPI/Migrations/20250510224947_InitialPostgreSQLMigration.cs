@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GameCatalogAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialPostgreSQLMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,11 +18,11 @@ namespace GameCatalogAPI.Migrations
                 name: "Developers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    Founded = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    Country = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Founded = table.Column<DateOnly>(type: "date", nullable: false),
+                    Country = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,17 +30,33 @@ namespace GameCatalogAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    PasswordHash = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    Age = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Games",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    ReleaseDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    Genre = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    Platform = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    Rating = table.Column<int>(type: "INTEGER", nullable: false),
-                    DeveloperId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ReleaseDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Genre = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Platform = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    DeveloperId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,6 +79,16 @@ namespace GameCatalogAPI.Migrations
                     { 3, "Poland", new DateOnly(2002, 5, 1), "CD Projekt Red" },
                     { 4, "USA", new DateOnly(1998, 12, 1), "Rockstar Games" },
                     { 5, "USA", new DateOnly(1996, 8, 24), "Valve" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Age", "PasswordHash", "Role", "Username" },
+                values: new object[,]
+                {
+                    { 1, 25, "$2a$11$c4FBkI2HLSzuyGLHQ0H98.KQejkPcR9FbKO25Wv9FdfDBQwLhtOCu", 1, "admin" },
+                    { 2, 30, "$2a$11$yaPqa1JJSHTuxbP6Jdgw/Oc7aVNT/OLuXGO/yXbnT8m.jBDdq.u82", 0, "covek" },
+                    { 3, 16, "$2a$11$c4FBkI2HLSzuyGLHQ0H98.KQejkPcR9FbKO25Wv9FdfDBQwLhtOCu", 1, "keba" }
                 });
 
             migrationBuilder.InsertData(
@@ -90,6 +117,9 @@ namespace GameCatalogAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Developers");

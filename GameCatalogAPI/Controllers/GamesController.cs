@@ -56,6 +56,9 @@ namespace GameCatalogAPI.Controllers
         public async Task<ActionResult<GameDTO>> CreateGameForDeveloper(
             CreateGameForDeveloperDTO newGameForDevDTO ,int developerId)
         {
+            // REDUNDANT - If the newGameForDevDTO is null
+            // (for example, if the request body is empty or malformed),
+            // ASP.NET Core will automatically return due to model binding failure. 
             if (newGameForDevDTO == null) return BadRequest("Game information is missing.");
 
             var createdGameDTO = await
