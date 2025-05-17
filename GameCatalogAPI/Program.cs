@@ -86,8 +86,15 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<GameCatalogContext>();
 
-    dbContext.Database.EnsureDeleted();
-    dbContext.Database.EnsureCreated();
+    if (app.Environment.IsDevelopment())
+    {
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+    }
+    else
+    {
+        dbContext.Database.Migrate();
+    }
 
     //if (!dbContext.Users.Any())
     //{
