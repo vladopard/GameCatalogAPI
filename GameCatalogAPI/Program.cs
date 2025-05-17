@@ -22,6 +22,8 @@ builder.Services.AddControllers(configure =>
         setupAction.SerializerSettings.ContractResolver =
         new CamelCasePropertyNamesContractResolver();
     });
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"--- DEBUG: Connection String Retrieved: '{connectionString}'");
 
 builder.Services.AddDbContext<GameCatalogContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
